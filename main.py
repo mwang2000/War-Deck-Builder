@@ -2,6 +2,7 @@ import requests
 import urllib.request
 import time
 from selenium import webdriver
+from itertools import combinations
 
 winConditions = ('Mortar','RG','ElixirGolem','Hog','Ram','Giant','RoyalHogs','Rocket','3M',
 'WallBreakers','Barrel','Balloon','XBow','GobGiant','PEKKA','Golem','Miner','RamRider','Graveyard',
@@ -15,36 +16,35 @@ antiAir = ('IceSpirit','SpearGobs','Bats','FireSpirits','Archers','Minions','Gob
 damageSpells = ('Zap','Snowball','Arrows','RoyalDelivery','Earthquake','Fireball','Rocket',
 'BarbBarrel','Tornado','Poison','Freeze','Lightning','Log')
 
-#collect cards from user input and put in list
-cardList = []
-print('enter your card collection and type done after you enter your last card')
-card = ''
-while card != 'done':
-    choice = input()
-    cardList.append(choice)
-
+# takes a list of cards and spits out a list of decks that could be made, taking into account different types of cards
+# def deckBuilder(cards):
+#     deckList = combinations(cardList,8)
 
 #get rating of given deck
-def retrieveRating():
-    url = 'https://www.deckshop.pro/check/?deck=Skellies-IceSpirit-Gobs-SpearGobs-Zap-Bats-FireSpirits-Arrows'
-# deck = ''
-# for i in range(0,7):
-#     ele = input()
-#     deck = deck + ele + '-'
-# deck = deck + input('Last card?')
-    driver = webdriver.Chrome('C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe')
-    driver.get(url)
-# driver.get(url+deck)
+def retrieveRating(deck):
+    #url = 'https://www.deckshop.pro/check/?deck=Skellies-IceSpirit-Gobs-SpearGobs-Zap-Bats-FireSpirits-Arrows'
+    url = 'https://www.deckshop.pro/check/?deck='
+    urlAppend = '-'.join(deck)
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = webdriver.Chrome('C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe',options=options)
+    driver.get(url+urlAppend)
     rating = driver.find_elements_by_xpath("//table[@class='table table-inverse mb-3']//tr")
     for element in rating:
         print(element.text)
 
-# elements = driver.find_elements_by_class_name('col-sm-4 col-md-3 col-6 mb-4 deck-container')
-
-# takes a list of cards and spits out a list of decks that could be made, taking into account different types of cards
-def deckBuilder(cards):
-    deckList = []
-    for card in deckWinConditions:
+#collect cards from user input and put in list
+cardList = []
+print('enter your card collection and type done after you enter your last card')
+choice = ''
+while choice != 'done':
+    choice = input()
+    if choice != 'done':
+        cardList.append(choice)
+deckList = combinations(cardList,8)
+for deck in deckList:
+    retrieveRating(deck)
 
 
 # labels certain cards as 
